@@ -1,0 +1,23 @@
+# 本地研究临时目录
+uumit-local-knowledge-base/
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.env
+.venv/
+
+# Obsidian
+.obsidian/
+
+# macOS / Windows
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo

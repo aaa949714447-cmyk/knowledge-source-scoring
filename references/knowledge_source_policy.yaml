@@ -1,0 +1,134 @@
+version: 1
+name: UUMit Knowledge Source Scoring Policy
+language: zh-CN
+purpose: >-
+  Score web sources before using them as knowledge-base material. The model may
+  summarize and extract evidence, but source reliability must be decided by this
+  rule-based scorecard.
+
+thresholds:
+  A:
+    min_score: 85
+    action: main_source
+    description: 可作为主来源，允许进入正式知识库。
+  B:
+    min_score: 70
+    action: supporting_source
+    description: 可作为辅助来源，允许进入正式知识库，但需要至少一个 A/B 级交叉来源。
+  C:
+    min_score: 55
+    action: lead_only
+    description: 只能作为线索或候选素材，不能直接进入正式知识库。
+  D:
+    min_score: 0
+    action: reject
+    description: 不采纳，除非用户明确指定人工保留。
+
+hard_rules:
+  min_sources_per_knowledge_point: 2
+  formal_kb_allowed_levels: [A, B]
+  c_level_requires_review: true
+  reject_if_no_url: true
+  reject_if_generated_without_source: true
+  reject_if_source_content_unavailable: true
+  max_level_without_author_or_publisher: C
+  max_level_without_publish_or_update_date: B
+  max_level_for_single_blog_source: C
+  conflict_blocks_auto_accept: true
+  user_specified_source_still_requires_scoring: true
+
+score_dimensions:
+  authority:
+    max: 30
+    description: 来源主体是否权威、稳定、可问责。
+  traceability:
+    max: 20
+    description: 是否能追溯作者、发布时间、版本、引用和原始出处。
+  technical_depth:
+    max: 20
+    description: 内容是否具备可学习、可复核、可操作的专业细节。
+  freshness:
+    max: 10
+    description: 内容是否仍然适用。
+  cross_validation:
+    max: 15
+    description: 是否有独立来源支持同一结论。
+  bias_penalty:
+    min: -15
+    max: 0
+    description: 商业、SEO、广告或夸大承诺风险扣分。
+
+source_type_defaults:
+  official_docs:
+    base_score: 90
+  standards_or_spec:
+    base_score: 90
+  peer_reviewed_or_preprint:
+    base_score: 85
+  university_course:
+    base_score: 85
+  reputable_technical_reference:
+    base_score: 85
+  reputable_project_docs:
+    base_score: 75
+  engineering_blog:
+    base_score: 70
+  community_blog:
+    base_score: 55
+  qna_or_forum:
+    base_score: 50
+  marketing_or_course_sales:
+    base_score: 35
+  aggregator_or_scraper:
+    base_score: 25
+  unknown:
+    base_score: 20
+
+multimodal_policy:
+  default_use: false
+  max_images_per_source_without_approval: 5
+  prefer_text_before_vision: true
+  require_user_approval_for_sensitive_images: true
+  require_reason_for_each_image: true
+  allowed_when_image_contains:
+    - diagram_with_unavailable_text
+    - chart_or_table_needed_for_claim
+    - formula_or_code_screenshot_needed_for_claim
+    - workflow_or_architecture_image_needed_for_claim
+  never_send_by_default:
+    - logos
+    - avatars
+    - decorative_images
+    - ads
+    - social_share_images
+    - tracking_pixels
+    - private_or_internal_screenshots
+    - credentials_or_tokens
+    - faces_or_personal_data
+  required_image_fields:
+    - image_url
+    - image_alt
+    - image_context
+    - reason_for_multimodal
+    - model_used
+    - confidence
+    - extracted_evidence
+
+review_status:
+  auto_accepted:
+    conditions:
+      - source_level in [A, B]
+      - at least 2 independent sources
+      - no unresolved conflict
+  needs_review:
+    conditions:
+      - source_level == C
+      - only one acceptable source
+      - missing author, date, or version
+      - multimodal interpretation was needed
+  rejected:
+    conditions:
+      - source_level == D
+      - generated without source
+      - inaccessible source content
+      - unresolved conflict with official source

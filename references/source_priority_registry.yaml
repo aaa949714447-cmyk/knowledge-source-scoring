@@ -1,0 +1,209 @@
+version: 1
+name: AI Knowledge Source Priority Registry
+language: zh-CN
+purpose: >-
+  Prefer reliable, official, and free knowledge sources before using blogs,
+  forums, aggregators, or paid-course pages. This registry guides web research
+  order; every retrieved source must still be scored by knowledge_source_policy.yaml.
+
+usage_rules:
+  - Prefer primary official documentation for product/API behavior.
+  - Prefer papers, standards, and university courses for durable concepts.
+  - Prefer reputable open technical references for beginner explanations only after primary sources are checked.
+  - Use community/blog/forum sources only as examples or issue clues.
+  - If an overseas priority source fails with 403, timeout, TLS, DNS, region restriction, or empty content and proxy_used is false, ask the user to enable VPN/proxy before falling back.
+  - If proxy_used is true and an overseas source still fails, record it as rejected with the concrete error and continue with other priority sources.
+  - Do not treat this registry as evidence by itself; it only selects candidate URLs.
+
+priority_order:
+  - official_product_docs
+  - official_research_or_model_pages
+  - papers_and_preprints
+  - standards_and_specs
+  - university_and_open_courses
+  - reputable_open_reference
+  - official_project_docs
+  - community_examples
+
+overseas_sources:
+  official_product_docs:
+    - name: OpenAI Docs
+      base_url: https://platform.openai.com/docs
+      alternate_base_urls:
+        - https://developers.openai.com/api/docs
+      topics: [llm, prompt_engineering, reasoning, structured_output, tool_use, agents, api]
+      access_note: Often requires VPN/proxy from China networks.
+    - name: Anthropic Claude Docs
+      base_url: https://docs.anthropic.com/
+      topics: [llm, prompt_engineering, tool_use, agents, safety, api]
+      access_note: May redirect to region-unavailable page; ask user to enable VPN/proxy if this happens.
+    - name: Google AI for Developers
+      base_url: https://ai.google.dev/docs
+      topics: [gemini, prompt_engineering, multimodal, structured_output, api]
+      access_note: May require VPN/proxy.
+    - name: Google Cloud AI Docs
+      base_url: https://cloud.google.com/vertex-ai/generative-ai/docs
+      alternate_base_urls:
+        - https://docs.cloud.google.com/vertex-ai/generative-ai/docs
+      topics: [gemini, vertex_ai, prompt_engineering, rag, agents, api]
+      access_note: May require VPN/proxy.
+    - name: Microsoft Learn Azure AI
+      base_url: https://learn.microsoft.com/en-us/azure/ai-services/
+      alternate_base_urls:
+        - https://learn.microsoft.com/en-us/azure/ai-foundry/
+      topics: [azure_ai, prompt_engineering, rag, agents, responsible_ai, api]
+      access_note: Usually accessible; still score by author/date and page specificity.
+    - name: AWS Bedrock Docs
+      base_url: https://docs.aws.amazon.com/bedrock/
+      topics: [bedrock, llm, agents, rag, guardrails, api]
+      access_note: Usually accessible; some regional docs may redirect.
+    - name: Meta Llama Docs
+      base_url: https://www.llama.com/docs/
+      topics: [open_models, llama, fine_tuning, inference, safety]
+      access_note: May require VPN/proxy.
+    - name: Hugging Face Docs
+      base_url: https://huggingface.co/docs
+      topics: [transformers, datasets, inference, agents, open_models, fine_tuning]
+      access_note: Free docs; project docs rather than neutral standard.
+
+  official_research_or_model_pages:
+    - name: OpenAI Research
+      base_url: https://openai.com/research/
+      topics: [research, model_capabilities, safety]
+      access_note: Use for product/research context, not API facts unless docs confirm.
+    - name: Google DeepMind Blog
+      base_url: https://deepmind.google/discover/blog/
+      topics: [research, model_capabilities, safety]
+      access_note: Research communication; cross-validate with papers when possible.
+    - name: Anthropic Research
+      base_url: https://www.anthropic.com/research
+      topics: [research, interpretability, safety]
+      access_note: May require VPN/proxy.
+    - name: Meta AI Research
+      base_url: https://ai.meta.com/research/
+      topics: [research, open_models, agents]
+      access_note: May require VPN/proxy.
+
+  papers_and_preprints:
+    - name: arXiv
+      base_url: https://arxiv.org/
+      topics: [papers, llm, prompt_engineering, rag, agents, evaluation]
+      access_note: Prefer abstract pages for metadata, PDF for full technical detail if needed.
+    - name: ACL Anthology
+      base_url: https://aclanthology.org/
+      topics: [nlp, llm, prompt_engineering, evaluation]
+      access_note: Strong for NLP papers; use paper metadata and venue.
+    - name: Papers with Code
+      base_url: https://paperswithcode.com/
+      topics: [papers, benchmarks, datasets]
+      access_note: Good as index/lead; verify claims in original papers.
+
+  university_and_open_courses:
+    - name: Stanford CS224N
+      base_url: https://web.stanford.edu/class/cs224n/
+      topics: [nlp, transformers, embeddings, language_models]
+      access_note: Use lecture notes/slides as educational source.
+    - name: Stanford CS25 Transformers United
+      base_url: https://web.stanford.edu/class/cs25/
+      topics: [transformers, llm, agents]
+      access_note: Educational; verify current API/product details elsewhere.
+    - name: MIT OpenCourseWare
+      base_url: https://ocw.mit.edu/
+      topics: [machine_learning, deep_learning, math]
+      access_note: Great for foundations, not current product docs.
+    - name: Dive into Deep Learning
+      base_url: https://d2l.ai/
+      alternate_base_urls:
+        - https://zh.d2l.ai/
+      topics: [deep_learning, transformers, attention, embeddings]
+      access_note: Free textbook; strong for foundations.
+
+  reputable_open_reference:
+    - name: Prompt Engineering Guide
+      base_url: https://www.promptingguide.ai/
+      alternate_base_urls:
+        - https://www.promptingguide.ai/zh
+      topics: [prompt_engineering, chain_of_thought, self_consistency, rag, agents]
+      access_note: Good beginner reference; often C-level unless author/date are clear.
+    - name: Google Machine Learning Crash Course
+      base_url: https://developers.google.com/machine-learning/crash-course
+      topics: [machine_learning, foundations]
+      access_note: Free official educational material.
+
+  official_project_docs:
+    - name: LangChain Docs
+      base_url: https://python.langchain.com/docs/
+      topics: [agents, rag, tool_use, orchestration]
+      access_note: Project docs; use for LangChain behavior, not general truth.
+    - name: LlamaIndex Docs
+      base_url: https://docs.llamaindex.ai/
+      topics: [rag, agents, indexing, retrieval]
+      access_note: Project docs; cross-validate general RAG claims.
+    - name: Haystack Docs
+      base_url: https://docs.haystack.deepset.ai/
+      topics: [rag, pipelines, retrieval]
+      access_note: Project docs; useful implementation examples.
+
+domestic_sources:
+  official_product_docs:
+    - name: 阿里云百炼 / 通义千问文档
+      base_url: https://help.aliyun.com/zh/model-studio/
+      topics: [qwen, llm, prompt_engineering, rag, agents, api]
+      access_note: 国内官方产品文档，优先用于阿里云百炼/通义千问相关事实。
+    - name: ModelScope 魔搭社区文档
+      base_url: https://modelscope.cn/docs
+      topics: [open_models, datasets, inference, fine_tuning]
+      access_note: 国内开源模型生态文档；注意区分社区内容和官方项目文档。
+    - name: DeepSeek API Docs
+      base_url: https://api-docs.deepseek.com/
+      topics: [deepseek, llm, reasoning, api]
+      access_note: 官方 API 文档，适合 DeepSeek 模型/API 行为。
+    - name: 智谱 AI 开放平台文档
+      base_url: https://open.bigmodel.cn/dev/howuse/introduction
+      topics: [glm, llm, api, agents]
+      access_note: 官方文档，适合 GLM/智谱产品事实。
+    - name: Moonshot AI / Kimi API Docs
+      base_url: https://platform.moonshot.cn/docs/
+      topics: [kimi, llm, long_context, api]
+      access_note: 官方 API 文档。
+    - name: 百度智能云千帆大模型平台文档
+      base_url: https://cloud.baidu.com/doc/WENXINWORKSHOP/
+      topics: [wenxin, llm, rag, agents, api]
+      access_note: 官方云产品文档。
+    - name: 腾讯云混元大模型文档
+      base_url: https://cloud.tencent.com/document/product/1729
+      topics: [hunyuan, llm, api]
+      access_note: 官方云产品文档。
+    - name: 火山引擎豆包 / Ark 文档
+      base_url: https://www.volcengine.com/docs/82379
+      topics: [doubao, llm, api, agents]
+      access_note: 官方云产品文档。
+    - name: 华为云 ModelArts 文档
+      base_url: https://support.huaweicloud.com/modelarts/
+      topics: [modelarts, mlops, training, deployment]
+      access_note: 官方云产品文档，偏平台与工程。
+
+  university_and_open_courses:
+    - name: 动手学深度学习 中文版
+      base_url: https://zh.d2l.ai/
+      topics: [deep_learning, transformers, attention, embeddings]
+      access_note: 免费教材，适合基础知识。
+    - name: 清华大学开源软件镜像 / 课程公开资料
+      base_url: https://mirrors.tuna.tsinghua.edu.cn/
+      topics: [open_source, courses, datasets]
+      access_note: 更多是资料入口，具体课程需单独评分。
+
+  reputable_open_reference:
+    - name: 机器之心
+      base_url: https://www.jiqizhixin.com/
+      topics: [ai_news, paper_explainer]
+      access_note: 媒体/解读来源，默认只作线索或辅助例子。
+    - name: CSDN / 知乎 / 掘金
+      base_url: ""
+      topics: [community_examples]
+      access_note: 社区内容，默认低优先级；只用于案例、踩坑、错误信息线索。
+
+vpn_prompt_template: >-
+  我尝试访问海外优先来源 {source_name} ({url}) 失败，错误是：{error}。
+  当前没有检测到代理生效，或该域名未走代理。请先打开 VPN/确认代理端口，
+  然后我再重试；如果你希望我跳过该官方来源并继续用国内/其他来源，也可以告诉我。
