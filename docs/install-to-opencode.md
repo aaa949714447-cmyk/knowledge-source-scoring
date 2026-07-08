@@ -66,7 +66,7 @@ cp -r scripts ~/.claude/skills/knowledge-source-scoring/
 ```bash
 python3 scripts/download_source.py \
   --url "https://www.promptingguide.ai/zh/techniques/consistency" \
-  --out ~/uumit-local-knowledge-base \
+  --out ~/knowledge-source-scoring-workspace \
   --query "自我一致性提示技术是什么"
 ```
 

@@ -65,7 +65,7 @@ For a quick source scoring pass, use:
 ```bash
 python3 ~/.config/opencode/skills/knowledge-source-scoring/scripts/download_source.py \
   --url "https://www.promptingguide.ai/zh/techniques/consistency" \
-  --out ~/uumit-local-knowledge-base \
+  --out ~/knowledge-source-scoring-workspace \
   --query "自我一致性提示技术是什么，以及适合解决什么问题"
 ```
 
@@ -82,7 +82,7 @@ Proxy behavior:
 Local staging is only for temporary research evidence:
 
 ```text
-~/uumit-local-knowledge-base/
+~/knowledge-source-scoring-workspace/
 └── sources/<slug>/
     ├── raw.html
     ├── metadata.json
@@ -95,7 +95,7 @@ Local staging is only for temporary research evidence:
 Default vault path:
 
 ```text
-/mnt/c/Users/luyj/wiki-vault/raw/obsidian
+<YOUR_OBSIDIAN_VAULT>
 ```
 
 Knowledge base root:

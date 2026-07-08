@@ -6,6 +6,8 @@
 
 > 一个 **Claude / OpenCode Skill** + 独立 Python 工具，帮你用可复现的规则评估网页来源可信度，并把筛选后的知识整理成新手友好的 **Obsidian Markdown 笔记**。
 
+> 别再把不靠谱网页塞进知识库。先评分，再写笔记。
+
 ---
 
 ## 30 秒看懂
@@ -61,14 +63,14 @@ cp -r scripts ~/.config/opencode/skills/knowledge-source-scoring/
 ```bash
 python3 scripts/download_source.py \
   --url "https://www.promptingguide.ai/zh/techniques/consistency" \
-  --out ~/uumit-local-knowledge-base \
+  --out ~/knowledge-source-scoring-workspace \
   --query "自我一致性提示技术是什么"
 ```
 
 脚本会输出 JSON 评分结果，并在本地保存：
 
 ```text
-~/uumit-local-knowledge-base/
+~/knowledge-source-scoring-workspace/
 └── sources/<slug>/
     ├── raw.html
     ├── text.txt
@@ -98,7 +100,9 @@ flowchart LR
 
 ## 评分策略（A/B/C/D 四级）
 
-评分规则写在 `references/knowledge_source_policy.yaml` 中，六个维度：
+评分政策写在 `references/knowledge_source_policy.yaml` 中；`scripts/download_source.py` 内置了一套与政策一致的保守首轮评分逻辑，便于快速得到可复核的 JSON 结果。
+
+六个评分维度：
 
 | 维度 | 满分 | 说明 |
 |------|------|------|
@@ -120,7 +124,7 @@ flowchart LR
 
 ## 来源优先级（可扩展）
 
-`references/source_priority_registry.yaml` 默认内置了 AI 领域的优先来源，按可信度排序：
+`references/source_priority_registry.yaml` 当前内置了 AI 领域的优先来源，按可信度排序：
 
 1. 官方产品文档（OpenAI / Anthropic / 阿里云百炼 / DeepSeek 等）
 2. 官方研究或模型页面
@@ -131,7 +135,7 @@ flowchart LR
 7. 官方项目文档（LangChain、LlamaIndex）
 8. 社区案例（仅作线索）
 
-> **它是通用框架**：你可以把任意领域的来源加进 `source_priority_registry.yaml`，评分逻辑不变。
+> **它的定位是通用框架**：当前仓库先提供 AI 领域预设，你可以把医学、法律、编程、商业研究等任意领域的来源加进 `source_priority_registry.yaml`，继续沿用同一套评分思路。
 
 ---
 
@@ -150,6 +154,7 @@ knowledge-source-scoring/
 ├── scripts/
 │   └── download_source.py                # 独立下载与评分脚本
 ├── examples/
+│   ├── README.md                         # 示例说明
 │   ├── scorecard-example.json            # 评分结果示例
 │   └── obsidian-note-example.md          # 最终 Obsidian 笔记示例
 └── docs/
@@ -173,9 +178,9 @@ knowledge-source-scoring/
       "source_url": "https://www.promptingguide.ai/zh/techniques/consistency",
       "source_title": "Self-Consistency | Prompt Engineering Guide",
       "source_type": "reputable_technical_reference",
-      "source_score": 76,
-      "source_level": "B",
-      "role": "supporting"
+      "source_score": 57,
+      "source_level": "C",
+      "risk_notes": "C 级来源只能作为例子或线索，需要人工复核或补充独立来源。"
     }
   ]
 }
@@ -203,7 +208,7 @@ updated: 2026-07-08
 
 | 来源 | URL | 分数 | 等级 | 为什么可信 / 风险 |
 |---|---|---:|---|---|
-| Self-Consistency | https://www.promptingguide.ai/... | 76 | B | 知名参考，但非官方 |
+| Self-Consistency | https://www.promptingguide.ai/... | 57 | C | 知名参考，但缺少作者/日期，只能作为辅助例子 |
 ```
 
 ---
@@ -223,13 +228,15 @@ official_product_docs:
 
 ### 2. 调整评分阈值
 
-编辑 `references/knowledge_source_policy.yaml`：
+编辑 `references/knowledge_source_policy.yaml` 可以调整 Agent 的评分政策说明：
 
 ```yaml
 thresholds:
   A:
     min_score: 85    # 调高或调低
 ```
+
+如果你希望独立 Python 脚本也同步改变评分行为，目前需要同时修改 `scripts/download_source.py` 中的 `score_source()`。后续可以把脚本升级为直接读取 YAML 策略。
 
 ### 3. 更换笔记模板
 
@@ -241,7 +248,7 @@ thresholds:
 
 | 特性 | 说明 |
 |------|------|
-| ✅ 规则透明 | 评分不是黑盒，全部写在 YAML 中 |
+| ✅ 规则透明 | 评分政策公开在 YAML 中，脚本首轮评分逻辑也可直接审阅 |
 | ✅ 来源可追溯 | 每篇笔记底部都带 URL、分数、等级、可信理由 |
 | ✅ 新手友好 | 用中文讲解，保留关键英文术语，附带学习路线 |
 | ✅ 与 Obsidian 原生集成 | 纯 Markdown + 双向链接，不绑定任何工具 |

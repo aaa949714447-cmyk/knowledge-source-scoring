@@ -143,7 +143,7 @@ def fetch(url: str, timeout: int = 30, proxy: str = "", no_proxy: bool = False) 
     req = urllib.request.Request(
         url,
         headers={
-            "User-Agent": "UUMitKnowledgeSourceScoring/1.1 (+local research)",
+            "User-Agent": "KnowledgeSourceScoring/1.1 (+local research)",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         },
     )
@@ -428,7 +428,7 @@ def write_json(path: Path, data: object) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Download and score a source for beginner knowledge-note synthesis.")
     parser.add_argument("--url", required=True)
-    parser.add_argument("--out", default="~/uumit-local-knowledge-base")
+    parser.add_argument("--out", default="~/knowledge-source-scoring-workspace")
     parser.add_argument("--query", default="")
     parser.add_argument("--proxy", default=env_proxy(), help="HTTP(S) proxy for external web fetches. Defaults to HTTPS_PROXY/HTTP_PROXY env vars.")
     parser.add_argument("--no-proxy", action="store_true", help="Disable proxy use for this fetch.")

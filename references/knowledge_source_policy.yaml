@@ -1,5 +1,5 @@
 version: 1
-name: UUMit Knowledge Source Scoring Policy
+name: Knowledge Source Scoring Policy
 language: zh-CN
 purpose: >-
   Score web sources before using them as knowledge-base material. The model may

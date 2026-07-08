@@ -25,7 +25,7 @@
 ## 本地知识库目录建议
 
 ```text
-~/uumit-local-knowledge-base/
+~/knowledge-source-scoring-workspace/
 ├── sources/      # 原始 HTML、文本、图片清单、metadata
 ├── articles/     # 整理后的 Markdown
 ├── candidates/   # C 级候选素材
